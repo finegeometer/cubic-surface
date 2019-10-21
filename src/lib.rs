@@ -123,8 +123,10 @@ impl State {
                 }
 
                 #[allow(clippy::float_cmp)]
-                fn coefficient(value: f64) -> String {
-                    if value == 1.0 {
+                fn coefficient(value: f64, monomial: &str) -> String {
+                    if monomial == "" {
+                        format!("{}", value)
+                    } else if value == 1.0 {
                         String::new()
                     } else if value == -1.0 {
                         "-".to_string()
@@ -134,11 +136,11 @@ impl State {
                 }
 
                 let out = if *first {
-                    format!("{}{}", coefficient(value), monomial)
+                    format!("{}{}", coefficient(value, monomial), monomial)
                 } else if value < 0.0 {
-                    format!(" - {}{}", coefficient(-value), monomial)
+                    format!(" - {}{}", coefficient(-value, monomial), monomial)
                 } else {
-                    format!(" + {}{}", coefficient(value), monomial)
+                    format!(" + {}{}", coefficient(value, monomial), monomial)
                 };
 
                 *first = false;
