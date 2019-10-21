@@ -5,6 +5,7 @@ Draw the surface given by a cubic equation in x, y, and z.
 # Usage
 
 WASD, Space, LShift to move.
+
 When mouse is locked, move mouse to rotate. (Click the screen to lock the mouse, and hit escape to unlock it.)
 
 The twenty sliders control the twenty coefficients of the equation. Each slider can takes integer values from -2 to 2.
