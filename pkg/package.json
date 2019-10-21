@@ -1,0 +1,15 @@
+{
+  "name": "cubic-surface",
+  "collaborators": [
+    "finegeometer <finegeometer@gmail.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "cubic_surface_bg.wasm",
+    "cubic_surface.js",
+    "cubic_surface.d.ts"
+  ],
+  "module": "cubic_surface.js",
+  "types": "cubic_surface.d.ts",
+  "sideEffects": "false"
+}
