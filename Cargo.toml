@@ -18,6 +18,7 @@ nalgebra = "0.18"
 [dependencies.web-sys]
 version = "0.3"
 features = [
+  'CssStyleDeclaration',
   'Document',
   'Element',
   'Event',

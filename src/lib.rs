@@ -158,7 +158,8 @@ impl State {
                 .enumerate()
                 .map(|(n, monomial)| format_slider(&mut tmp_bool, monomial, n))
                 .collect::<String>()
-                    + " = 0"),
+                    + " = 0"
+                    + &format!("\n{:?}", model.camera.translation.vector.as_slice())),
             );
 
             model.move_player(dt as f32);
@@ -207,7 +208,21 @@ impl Model {
             .unwrap_throw();
         body.append_child(&info_box).unwrap_throw();
 
-        let make_slider = |value: &'static str| {
+        let grid = document
+            .create_element("div")
+            .unwrap_throw()
+            .dyn_into::<web_sys::HtmlElement>()
+            .unwrap_throw();
+        grid.style().set_property("display", "grid").unwrap_throw();
+        grid.style()
+            .set_property(
+                "grid-template-columns",
+                "auto auto auto auto auto auto auto auto auto auto auto auto auto",
+            )
+            .unwrap_throw();
+        body.append_child(&grid).unwrap_throw();
+
+        let make_slider = |column: usize, value: &'static str| {
             let slider = document
                 .create_element("input")
                 .unwrap_throw()
@@ -217,9 +232,41 @@ impl Model {
             slider.set_min("-2");
             slider.set_max("2");
             slider.set_value(value);
-            body.append_child(&slider).unwrap_throw();
+            slider
+                .style()
+                .set_property("grid-column-start", &format!("{}", column))
+                .unwrap_throw();
             slider
         };
+
+        let sliders = [
+            make_slider(1, "0"),   // XXX
+            make_slider(2, "0"),   // XXY
+            make_slider(3, "0"),   // XYY
+            make_slider(4, "0"),   // YYY
+            make_slider(1, "0"),   // XXZ
+            make_slider(2, "2"),   // XYZ
+            make_slider(3, "0"),   // YYZ
+            make_slider(1, "0"),   // XZZ
+            make_slider(2, "0"),   // YZZ
+            make_slider(1, "0"),   // ZZZ
+            make_slider(6, "1"),   // XX
+            make_slider(7, "0"),   // XY
+            make_slider(8, "1"),   // YY
+            make_slider(6, "0"),   // XZ
+            make_slider(7, "0"),   // YZ
+            make_slider(6, "1"),   // ZZ
+            make_slider(10, "0"),  // X
+            make_slider(11, "0"),  // Y
+            make_slider(10, "0"),  // Z
+            make_slider(13, "-2"), //
+        ];
+
+        for &i in &[
+            0, 1, 2, 3, 10, 11, 12, 16, 17, 19, 4, 5, 6, 13, 14, 18, 7, 8, 15, 9,
+        ] {
+            grid.append_child(&sliders[i]).unwrap_throw();
+        }
 
         Self {
             animation_frame_closure: JsValue::undefined().into(),
@@ -228,28 +275,7 @@ impl Model {
             renderer: render::Renderer::new(&canvas, FRAGMENT_SHADER_SOURCE),
 
             camera: nalgebra::Isometry3::identity(),
-            sliders: [
-                make_slider("0"),  // XXX
-                make_slider("0"),  // XXY
-                make_slider("0"),  // XYY
-                make_slider("0"),  // YYY
-                make_slider("0"),  // XXZ
-                make_slider("2"),  // XYZ
-                make_slider("0"),  // YYZ
-                make_slider("0"),  // XZZ
-                make_slider("0"),  // YZZ
-                make_slider("0"),  // ZZZ
-                make_slider("1"),  // XX
-                make_slider("0"),  // XY
-                make_slider("1"),  // YY
-                make_slider("0"),  // XZ
-                make_slider("0"),  // YZ
-                make_slider("1"),  // ZZ
-                make_slider("0"),  // X
-                make_slider("0"),  // Y
-                make_slider("0"),  // Z
-                make_slider("-2"), //
-            ],
+            sliders,
 
             window,
             document,
