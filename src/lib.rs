@@ -229,8 +229,8 @@ impl Model {
                 .dyn_into::<web_sys::HtmlInputElement>()
                 .unwrap_throw();
             slider.set_type("range");
-            slider.set_min("-2");
-            slider.set_max("2");
+            slider.set_min("-3");
+            slider.set_max("3");
             slider.set_value(value);
             slider
                 .style()
