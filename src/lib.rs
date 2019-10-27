@@ -192,13 +192,55 @@ impl Model {
         let document = window.document().unwrap_throw();
         let body = document.body().unwrap_throw();
 
+        body.style().set_css_text(
+            r"display: grid;
+grid-gap: 10px;
+background-color: #805020;
+padding: 10px;
+grid-template-areas:
+    'canvas canvas canvas canvas slider300 emp00     emp00     emp00    '
+    'canvas canvas canvas canvas slider300 slider201 emp01     emp01    '
+    'canvas canvas canvas canvas slider210 slider201 slider102 emp02    '
+    'canvas canvas canvas canvas slider210 slider111 slider102 slider003'
+    'canvas canvas canvas canvas slider120 slider111 slider012 slider003'
+    'canvas canvas canvas canvas slider120 slider021 slider012 emp05    '
+    'canvas canvas canvas canvas slider030 slider021 emp06     emp06    '
+    'canvas canvas canvas canvas slider030 emp07     emp07     emp07    '
+    'canvas canvas canvas canvas emp08     emp08     emp08     emp08    '
+    'canvas canvas canvas canvas slider200 emp09     emp09     emp09    '
+    'canvas canvas canvas canvas slider200 slider101 emp10     emp10    '
+    'canvas canvas canvas canvas slider110 slider101 slider002 emp11    '
+    'canvas canvas canvas canvas slider110 slider011 slider002 emp12    '
+    'canvas canvas canvas canvas slider020 slider011 emp13     emp13    '
+    'canvas canvas canvas canvas slider020 emp14     emp14     emp14    '
+    'canvas canvas canvas canvas emp15     emp15     emp15     emp15    '
+    'canvas canvas canvas canvas slider100 emp16     emp16     emp16    '
+    'canvas canvas canvas canvas slider100 slider001 emp17     emp17    '
+    'canvas canvas canvas canvas slider010 slider001 emp18     emp18    '
+    'canvas canvas canvas canvas slider010 emp19     emp19     emp19    '
+    'canvas canvas canvas canvas emp20     emp20     emp20     emp20    '
+    'canvas canvas canvas canvas slider000 emp21     emp21     emp21    '
+    'info   info   info   info   info      info      info      info     ';
+
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+",
+        );
+
         let canvas = document
             .create_element("canvas")
             .unwrap_throw()
             .dyn_into::<web_sys::HtmlCanvasElement>()
             .unwrap_throw();
-        canvas.set_attribute("width", "800").unwrap_throw();
-        canvas.set_attribute("height", "800").unwrap_throw();
+        canvas.set_attribute("width", "800px").unwrap_throw();
+        canvas.set_attribute("height", "800px").unwrap_throw();
+        canvas
+            .style()
+            .set_property("grid-area", "canvas")
+            .unwrap_throw();
         body.append_child(&canvas).unwrap_throw();
 
         let info_box = document
@@ -206,23 +248,13 @@ impl Model {
             .unwrap_throw()
             .dyn_into::<web_sys::HtmlParagraphElement>()
             .unwrap_throw();
+        info_box
+            .style()
+            .set_property("grid-area", "info")
+            .unwrap_throw();
         body.append_child(&info_box).unwrap_throw();
 
-        let grid = document
-            .create_element("div")
-            .unwrap_throw()
-            .dyn_into::<web_sys::HtmlElement>()
-            .unwrap_throw();
-        grid.style().set_property("display", "grid").unwrap_throw();
-        grid.style()
-            .set_property(
-                "grid-template-columns",
-                "auto auto auto auto auto auto auto auto auto auto auto auto auto",
-            )
-            .unwrap_throw();
-        body.append_child(&grid).unwrap_throw();
-
-        let make_slider = |column: usize, value: &'static str| {
+        let make_slider = |value: &'static str| {
             let slider = document
                 .create_element("input")
                 .unwrap_throw()
@@ -233,39 +265,47 @@ impl Model {
             slider.set_max("3");
             slider.set_value(value);
             slider
-                .style()
-                .set_property("grid-column-start", &format!("{}", column))
-                .unwrap_throw();
-            slider
         };
 
         let sliders = [
-            make_slider(1, "0"),   // XXX
-            make_slider(2, "0"),   // XXY
-            make_slider(3, "0"),   // XYY
-            make_slider(4, "0"),   // YYY
-            make_slider(1, "0"),   // XXZ
-            make_slider(2, "2"),   // XYZ
-            make_slider(3, "0"),   // YYZ
-            make_slider(1, "0"),   // XZZ
-            make_slider(2, "0"),   // YZZ
-            make_slider(1, "0"),   // ZZZ
-            make_slider(6, "1"),   // XX
-            make_slider(7, "0"),   // XY
-            make_slider(8, "1"),   // YY
-            make_slider(6, "0"),   // XZ
-            make_slider(7, "0"),   // YZ
-            make_slider(6, "1"),   // ZZ
-            make_slider(10, "0"),  // X
-            make_slider(11, "0"),  // Y
-            make_slider(10, "0"),  // Z
-            make_slider(13, "-2"), //
+            make_slider("0"),  // XXX
+            make_slider("0"),  // XXY
+            make_slider("0"),  // XYY
+            make_slider("0"),  // YYY
+            make_slider("0"),  // XXZ
+            make_slider("2"),  // XYZ
+            make_slider("0"),  // YYZ
+            make_slider("0"),  // XZZ
+            make_slider("0"),  // YZZ
+            make_slider("0"),  // ZZZ
+            make_slider("1"),  // XX
+            make_slider("0"),  // XY
+            make_slider("1"),  // YY
+            make_slider("0"),  // XZ
+            make_slider("0"),  // YZ
+            make_slider("1"),  // ZZ
+            make_slider("0"),  // X
+            make_slider("0"),  // Y
+            make_slider("0"),  // Z
+            make_slider("-2"), //
         ];
 
-        for &i in &[
-            0, 1, 2, 3, 10, 11, 12, 16, 17, 19, 4, 5, 6, 13, 14, 18, 7, 8, 15, 9,
-        ] {
-            grid.append_child(&sliders[i]).unwrap_throw();
+        let mut i = 0;
+        for w in 0..=3 {
+            for z in 0..=3 - w {
+                for y in 0..=3 - w - z {
+                    let x = 3 - w - z - y;
+                    sliders[i]
+                        .style()
+                        .set_property("grid-area", &format!("slider{}{}{}", x, y, z))
+                        .unwrap_throw();
+                    i += 1;
+                }
+            }
+        }
+
+        for slider in &sliders {
+            body.append_child(&slider).unwrap_throw();
         }
 
         Self {

@@ -4,6 +4,7 @@ use wasm_bindgen::JsCast;
 type GL = web_sys::WebGl2RenderingContext;
 
 pub struct Renderer {
+    canvas: web_sys::HtmlCanvasElement,
     gl: GL,
     program: web_sys::WebGlProgram,
 
@@ -81,6 +82,7 @@ impl Renderer {
             vertex_buffer,
 
             gl,
+            canvas: canvas.clone(),
         }
     }
 
@@ -104,7 +106,12 @@ impl Renderer {
         self.gl
             .uniform1fv_with_f32_array(Some(self.uniform_coeffs.as_ref()), &coeffs);
 
-        self.gl.viewport(0, 0, 800, 800);
+        self.gl.viewport(
+            0,
+            0,
+            self.canvas.scroll_width(),
+            self.canvas.scroll_height(),
+        );
         self.gl.draw_arrays(GL::TRIANGLES, 0, 6);
     }
 }
